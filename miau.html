@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bouncing Miau</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(45deg, #ff7f50, #ff1493, #00bfff, #32cd32);
+      background-size: 400% 400%;
+      animation: gradientAnimation 10s ease infinite;
+    }
+
+    /* Animate the gradient background */
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      filter: blur(8px);
+      z-index: -1;
+    }
+
+    .miau {
+      position: absolute;
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <!-- Background container -->
+  <div id="background"></div>
+  <script>
+    const miauCount = 13; // Number of "miau" elements
+    const miaus = [];
+
+    // Random integer generator
+    const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+    // Random color generator
+    const randomColor = () => {
+      const r = random(0, 255);
+      const g = random(0, 255);
+      const b = random(0, 255);
+      return `rgb(${r}, ${g}, ${b})`;
+    };
+
+    // Create "miau" words
+    for (let i = 0; i < miauCount; i++) {
+      const miau = document.createElement('div');
+      miau.textContent = 'miau';
+      miau.className = 'miau';
+      miau.style.color = randomColor(); // Initial color
+      document.body.appendChild(miau);
+
+      miau.style.left = random(0, window.innerWidth - 50) + 'px';
+      miau.style.top = random(0, window.innerHeight - 50) + 'px';
+
+      // Assign random speed for each miau
+      miaus.push({
+        element: miau,
+        xSpeed: random(2, 7) * (Math.random() > 0.5 ? 1 : -1), // Random speed for X
+        ySpeed: random(2, 7) * (Math.random() > 0.5 ? 1 : -1), // Random speed for Y
+        colorChangeInterval: random(60, 120)
+      });
+    }
+
+    let frameCount = 0;
+
+    // Animation function
+    const animate = (timestamp) => {
+      frameCount++;
+
+      miaus.forEach((miau) => {
+        const rect = miau.element.getBoundingClientRect();
+
+        // Bounce horizontally
+        if (rect.left <= 0 || rect.right >= window.innerWidth) {
+          miau.xSpeed *= -1;
+        }
+
+        // Bounce vertically
+        if (rect.top <= 0 || rect.bottom >= window.innerHeight) {
+          miau.ySpeed *= -1;
+        }
+
+        // Update position
+        miau.element.style.left = rect.left + miau.xSpeed + 'px';
+        miau.element.style.top = rect.top + miau.ySpeed + 'px';
+
+        // Change color periodically
+        if (frameCount % miau.colorChangeInterval === 0) {
+          miau.element.style.color = randomColor();
+        }
+      });
+
+      requestAnimationFrame(animate);
+    };
+
+    // Start animation
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>
